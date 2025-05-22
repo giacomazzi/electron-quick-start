@@ -16,7 +16,7 @@ const dados_temp = {
         [
         {
             tension: 0.4,
-            label:'Dados da Temperatura',
+            label:'Temperatura',
             borderColor:'rgba(255,0,0,0.8)',
             data: []
         }
@@ -31,14 +31,14 @@ const data_max = {
             {
                 type: 'line',
                 tension: 0.5,
-                label: 'Dados da Oxigenio',
+                label: 'Oximetria',
                 borderColor: 'rgba(0, 0, 255, 0.8)',
                 data: [],
                 fill: false
             },
             {
                 type: 'bar',              
-                label: 'Dados da Batimentos',
+                label: 'BPM',
                 borderColor: 'rgba(0, 255, 0, 0.8)',
                 backgroundColor: 'rgba(0, 255, 0, 0.8)',
                 data: [],                
@@ -50,22 +50,24 @@ const data_max = {
 
 const grafico_temp = new Chart(plot_1, dados_temp);
 const grafico_max  = new Chart(plot_2, data_max);
-   
+
+//Recolhe os dados da serial e separa cada um em um vetor de quatro posições   
 parser.on('data', (line) =>
 {
     var data = line.split(':');
     console.log(data[0], data[1], data[2], data[3]);    
     
-    grafico_temp.data.labels.push(data[0]);
-    grafico_temp.data.datasets[0].data.push(data[1]);    
+    grafico_temp.data.labels.push(data[0]); //amostras
+    grafico_temp.data.datasets[0].data.push(data[1]); //temperatura   
 
     grafico_max.data.labels.push(data[0]);
-    grafico_max.data.datasets[0].data.push(data[2]);
-    grafico_max.data.datasets[1].data.push(data[3]);
+    grafico_max.data.datasets[0].data.push(data[2]); //bpm
+    grafico_max.data.datasets[1].data.push(data[3]); //O2
         
     grafico_temp.update();
     grafico_max.update();
     
+    //salva dados em TXT
     if(save_data != false)
     {
         fs.appendFile("data.txt", `${data[0]},${data[1]},${data[2]},${data[3]}\n`, (err) => {
